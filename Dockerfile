@@ -1,12 +1,9 @@
-FROM python:3.11-slim
+FROM python:3.11
 
-# Install system dependencies and compiler tools for building native libraries (e.g. ChromaDB)
+# Install tesseract-ocr and libgl1 (graphics library for streamlit/pillow)
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
-    libgl1-mesa-glx \
-    build-essential \
-    python3-dev \
-    g++ \
+    libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
