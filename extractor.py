@@ -12,8 +12,12 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 # Suppress verbose pdfminer FontBBox warnings
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 
-# Tesseract executable path for Windows
-#pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+import sys
+# Configure Tesseract path automatically on Windows
+if sys.platform.startswith("win32"):
+    tesseract_default_path = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    if os.path.exists(tesseract_default_path):
+        pytesseract.pytesseract.tesseract_cmd = tesseract_default_path
 
 def get_cache_filename(file_path):
     """Creates a matching .txt filename next to the original file."""
