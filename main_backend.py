@@ -119,8 +119,10 @@ def generate_reviewer_deck(
         
         # 1. Combine module texts
         for filename in selected_files:
-            # Check temp folder first, then cache
-            file_path = f"temp_{filename}"
+            # Check uploads directory first
+            file_path = os.path.join("./uploads", filename)
+            if not os.path.exists(file_path):
+                file_path = f"temp_{filename}"
             if not os.path.exists(file_path):
                 file_path = filename # fallback
             

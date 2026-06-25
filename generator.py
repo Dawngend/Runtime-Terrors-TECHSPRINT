@@ -230,7 +230,7 @@ def generate_custom_deck_cards(
                     ],
                     response_format={"type": "json_object"},
                     temperature=0.2,
-                    max_tokens=1024
+                    max_tokens=3072
                 )
                 data = json.loads(response.choices[0].message.content)
                 verified_questions = data.get("questions", [])
