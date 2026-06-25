@@ -14,6 +14,33 @@ import generator as ai
 os.makedirs("./extraction_cache", exist_ok=True)
 os.makedirs("./chroma_db", exist_ok=True)
 
+def resolve_file_path(filename: str) -> str:
+    if not filename:
+        return ""
+    if os.path.isabs(filename) and os.path.exists(filename):
+        return filename
+        
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(BASE_DIR, "uploads", filename),
+        os.path.join(BASE_DIR, filename),
+        os.path.join(os.getcwd(), "uploads", filename),
+        os.path.join(os.getcwd(), filename),
+        filename
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return os.path.abspath(candidate)
+            
+    # Check if a file with similar name exists in uploads directory
+    uploads_dir = os.path.join(BASE_DIR, "uploads")
+    if os.path.exists(uploads_dir):
+        for root, _, files in os.walk(uploads_dir):
+            if filename in files:
+                return os.path.abspath(os.path.join(root, filename))
+                
+    return filename
+
 def register_user(username: str, email: str, password: str, grade_level: int) -> Dict[str, Any]:
     try:
         user = db.sign_up(email, password, username, grade_level)
@@ -54,7 +81,7 @@ def upload_and_process_material(file_path: str, user_id: str, grade_level: int) 
     except Exception as e:
         return {"success": False, "message": str(e)}
 
-def ask_study_companion(user_id: str, query: str, search_online: bool = False) -> Dict[str, Any]:
+def ask_study_companion(user_id: str, query: str, search_online: bool = False, language: str = "Taglish") -> Dict[str, Any]:
     try:
         profile = db.get_user_profile(user_id)
         if not profile:
@@ -76,7 +103,8 @@ def ask_study_companion(user_id: str, query: str, search_online: bool = False) -
             grade_level=grade_level,
             user_mastery=mastery_score,
             context=context,
-            user_preferences=preferences
+            user_preferences=preferences,
+            language=language
         )
         
         return {"success": True, "data": response_data}
@@ -107,10 +135,10 @@ def generate_reviewer_deck(
     user_id: str,
     deck_name: str,
     subject: str,
-    grade_level: int,
     selected_files: List[str],
     total_questions: int,
-    sample_format_file: str = None
+    sample_format_file: str = None,
+    language: str = "Taglish"
 ) -> Dict[str, Any]:
     """Combines study modules, extracts text, generates MCQ questions, and saves them to Supabase."""
     try:
@@ -119,13 +147,7 @@ def generate_reviewer_deck(
         
         # 1. Combine module texts
         for filename in selected_files:
-            # Check uploads directory first
-            file_path = os.path.join("./uploads", filename)
-            if not os.path.exists(file_path):
-                file_path = f"temp_{filename}"
-            if not os.path.exists(file_path):
-                file_path = filename # fallback
-            
+            file_path = resolve_file_path(filename)
             res = ext.process_file(file_path, user_id)
             if res and 'text' in res:
                 combined_text += f"\n\n--- Content from {filename} ---\n\n" + res['text']
@@ -136,14 +158,15 @@ def generate_reviewer_deck(
         # 2. Extract sample question formatting if provided
         sample_format_text = None
         if sample_format_file:
-            res_sample = ext.process_file(sample_format_file, user_id)
+            sample_path = resolve_file_path(sample_format_file)
+            res_sample = ext.process_file(sample_path, user_id)
             if res_sample and 'text' in res_sample:
                 sample_format_text = res_sample['text']
                 
         # 3. Ingest documents into ChromaDB
         chunks = ext.chunk_text_for_rag(combined_text)
         doc_id = f"deck_{deck_name.replace(' ', '_').lower()}"
-        rag.ingest_document(user_id, grade_level, doc_id, chunks)
+        rag.ingest_document(user_id, 10, doc_id, chunks) # Use default grade 10
         
         # 4. Generate Deck Questions using Dual-API
         cards = ai.generate_custom_deck_cards(
@@ -151,7 +174,8 @@ def generate_reviewer_deck(
             subject=subject,
             deck_name=deck_name,
             total_questions=total_questions,
-            sample_format_text=sample_format_text
+            sample_format_text=sample_format_text,
+            language=language
         )
         
         if not cards:

@@ -116,6 +116,9 @@ def process_file(file_path: str, user_id: str) -> dict:
     """Processes a PDF/PPTX file, extracts text, and returns text and metadata with file hash."""
     text = process_module_file_v2(file_path)
     
+    if text.startswith("Error reading PDF:") or text.startswith("Error reading PPTX:"):
+        raise IOError(text)
+        
     # Calculate hash of file to use as file_hash/doc_id
     sha256 = hashlib.sha256()
     try:

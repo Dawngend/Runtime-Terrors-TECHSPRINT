@@ -124,8 +124,9 @@ if 'active_deck_name' not in st.session_state:
 if 'active_deck_subject' not in st.session_state:
     st.session_state.active_deck_subject = None
 
-# Helper directory setup
-UPLOAD_DIR = "./uploads"
+# Helper directory setup (Resolved absolutely)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 def save_uploaded_file(uploaded_file) -> str:
@@ -166,14 +167,14 @@ def login_screen():
         username = st.text_input("Username", key="reg_user")
         email = st.text_input("Email Address", key="reg_email")
         password = st.text_input("Password", type="password", key="reg_pass")
-        grade = st.number_input("Grade Level (1-12)", 1, 12, 10, key="reg_grade")
         
         if st.button("Sign Up", type="primary", use_container_width=True):
             if not all([username, email, password]):
                 st.warning("Please fill all required fields.")
             else:
                 with st.spinner("Creating account..."):
-                    result = backend.register_user(username, email, password, grade)
+                    # Pass a default grade level of 10 to keep db triggers happy
+                    result = backend.register_user(username, email, password, 10)
                     if result and result.get('success'):
                         st.success("Account created successfully! Please login using the Login tab.")
                     else:
@@ -188,7 +189,6 @@ def dashboard():
     
     # Sidebar navigation
     st.sidebar.title(f"👋 Kumusta, {username}!")
-    st.sidebar.markdown(f"**📚 Level**: Grade {st.session_state.profile.get('grade_level', 10)}")
     st.sidebar.metric("🏆 Mastery Score", f"{mastery:.1%}")
     
     st.sidebar.divider()
@@ -198,6 +198,10 @@ def dashboard():
         "📁 Saved Files", 
         "💬 AI Tutor Chat"
     ])
+    
+    st.sidebar.divider()
+    st.sidebar.subheader("⚙️ Companion Settings")
+    st.sidebar.selectbox("🗣️ Language Style", ["Taglish", "English", "Tagalog"], key="global_lang_pref")
     
     st.sidebar.divider()
     if st.sidebar.button("Logout", use_container_width=True):
@@ -318,7 +322,6 @@ def dashboard():
                     st.rerun()
             with col2:
                 if st.button("✨ Generate New Set of Questions"):
-                    # Trigger a deck regeneration in the background using the same specs
                     st.info("Directing you to the Create Reviewer workspace...")
                     st.session_state.quiz_started = False
                     st.rerun()
@@ -370,7 +373,12 @@ def dashboard():
         with st.form("custom_reviewer_form"):
             deck_name = st.text_input("Reviewer Title (e.g. Midterm Unit 2)")
             subject_name = st.text_input("Subject Category (e.g. Philippine History)")
-            grade_level = st.number_input("Target Grade Level", 1, 12, st.session_state.profile.get('grade_level', 10))
+            
+            # Select Language preference dropdown synced with global preference
+            g_lang = st.session_state.get("global_lang_pref", "Taglish")
+            g_index = ["Taglish", "English", "Tagalog"].index(g_lang) if g_lang in ["Taglish", "English", "Tagalog"] else 0
+            language_pref = st.selectbox("Language Preference", ["Taglish", "English", "Tagalog"], index=g_index)
+            
             num_questions = st.number_input("Total Questions to Generate", 3, 50, 10, step=1)
             
             submit = st.form_submit_button("Generate Reviewer Dojo 🚀", type="primary")
@@ -384,17 +392,17 @@ def dashboard():
                     with st.spinner("Tropa is reading, digesting, and validating questions..."):
                         # Save document metadata first in Supabase
                         for fname in saved_paths:
-                            db.save_document_metadata(st.session_state.user_id, fname, f"./uploads/{fname}")
+                            db.save_document_metadata(st.session_state.user_id, fname, os.path.join(UPLOAD_DIR, fname))
                             
                         # Call generation
                         res = backend.generate_reviewer_deck(
                             user_id=st.session_state.user_id,
                             deck_name=deck_name,
                             subject=subject_name,
-                            grade_level=grade_level,
                             selected_files=saved_paths,
                             total_questions=num_questions,
-                            sample_format_file=sample_path
+                            sample_format_file=sample_path,
+                            language=language_pref
                         )
                         
                         if res and res.get("success"):
@@ -455,7 +463,7 @@ def dashboard():
     # -------------------------------------------------------------------------
     elif app_mode == "💬 AI Tutor Chat":
         st.markdown("<h2 style='color: #FDFDF9;'>💬 Tropa AI Tutor Chat</h2>", unsafe_allow_html=True)
-        st.write("Ask your companion questions about modules or general study help. Answers are in Taglish.")
+        st.write("Ask your companion questions about modules or general study help.")
         
         # Option for web search
         search_online = st.checkbox("🌐 Search Online for Credible Sources")
@@ -475,7 +483,8 @@ def dashboard():
                 
             with st.chat_message("assistant"):
                 with st.spinner("Thinking (Nag-iisip)..."):
-                    res = backend.ask_study_companion(st.session_state.user_id, prompt, search_online=search_online)
+                    g_lang = st.session_state.get("global_lang_pref", "Taglish")
+                    res = backend.ask_study_companion(st.session_state.user_id, prompt, search_online=search_online, language=g_lang)
                     if res and res.get("success"):
                         ans = res["data"].get("explanation_taglish", "Pasensya na, hindi ko nagawa ang sagot.")
                         

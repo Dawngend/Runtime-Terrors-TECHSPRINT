@@ -36,6 +36,35 @@ try:
 except Exception as e:
     print(f"❌ NVIDIA Client Error: {e}")
 
+# --- JSON Helper ---
+def clean_and_parse_json(content: str) -> dict:
+    if not content:
+        return {}
+    content = content.strip()
+    
+    # Remove markdown code blocks if present
+    if content.startswith("```"):
+        first_newline = content.find("\n")
+        if first_newline != -1:
+            content = content[first_newline:].strip()
+        if content.endswith("```"):
+            content = content[:-3].strip()
+            
+    # Try parsing directly
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError as e:
+        # Try finding the first '{' and last '}'
+        start_idx = content.find('{')
+        end_idx = content.rfind('}')
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            json_str = content[start_idx:end_idx+1]
+            try:
+                return json.loads(json_str)
+            except:
+                pass
+        raise e
+
 # --- System Prompts ---
 SYSTEM_PROMPT_TAGLISH = """
 You are "Tropa", an AI Study Companion for Filipino students.
@@ -47,9 +76,20 @@ RULES:
 4. Output MUST be valid JSON.
 """
 
-SYSTEM_PROMPT_QWEN = """
-You are an expert academic tutor. Verify the accuracy of the concept and provide a structured breakdown.
-Output MUST be valid JSON.
+SYSTEM_PROMPT_ENGLISH = """
+You are "Tropa", an AI Study Companion for Filipino students.
+YOUR GOAL: Explain concepts clearly using pure, clear English.
+RULES:
+1. Write everything in professional, easy-to-understand academic English.
+2. Output MUST be valid JSON.
+"""
+
+SYSTEM_PROMPT_TAGALOG = """
+You are "Tropa", an AI Study Companion for Filipino students.
+YOUR GOAL: Explain concepts clearly using pure Tagalog (Filipino).
+RULES:
+1. Write everything in grammatical, clear Tagalog. Avoid English word usage unless there is no Tagalog equivalent.
+2. Output MUST be valid JSON.
 """
 
 def generate_adaptive_content(
@@ -57,7 +97,8 @@ def generate_adaptive_content(
     grade_level: int, 
     user_mastery: float,
     context: str = "",
-    user_preferences: Dict[str, Any] = None
+    user_preferences: Dict[str, Any] = None,
+    language: str = "Taglish"
 ) -> Dict[str, Any]:
     """
     Generates content using Groq (Llama) and NVIDIA (Qwen).
@@ -70,14 +111,13 @@ def generate_adaptive_content(
     
     user_prompt = f"""
     Topic: {topic}
-    Grade Level: {grade_level}
     Mastery: {user_mastery} ({difficulty})
     Style Preference: {style}
     Context: {context[:2000]}
 
     Generate a JSON object with:
     {{
-        "explanation_taglish": "...",
+        "explanation_taglish": "The explanation in the requested language style ({language})",
         "key_concepts": ["...", "..."],
         "practice_exercises": [
             {{ "question": "...", "answer": "...", "difficulty": "Easy" }},
@@ -91,6 +131,14 @@ def generate_adaptive_content(
 
     llama_data = {}
     qwen_data = {}
+    
+    # Determine the system prompt based on language
+    if language == "English":
+        sys_prompt = SYSTEM_PROMPT_ENGLISH
+    elif language == "Tagalog":
+        sys_prompt = SYSTEM_PROMPT_TAGALOG
+    else:
+        sys_prompt = SYSTEM_PROMPT_TAGLISH
 
     # 1. Call Groq
     if client_groq:
@@ -98,13 +146,13 @@ def generate_adaptive_content(
             response = client_groq.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT_TAGLISH},
+                    {"role": "system", "content": sys_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
                 response_format={"type": "json_object"},
                 temperature=0.7
             )
-            llama_data = json.loads(response.choices[0].message.content)
+            llama_data = clean_and_parse_json(response.choices[0].message.content)
         except Exception as e:
             print(f"❌ Groq Error: {e}")
 
@@ -114,14 +162,14 @@ def generate_adaptive_content(
             response = client_qwen.chat.completions.create(
                 model=NVIDIA_MODEL,
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT_QWEN},
+                    {"role": "system", "content": "You are an expert academic tutor. Verify the accuracy of the concept. Output MUST be valid JSON."},
                     {"role": "user", "content": user_prompt}
                 ],
                 response_format={"type": "json_object"},
                 temperature=0.3,
                 max_tokens=1024
             )
-            qwen_data = json.loads(response.choices[0].message.content)
+            qwen_data = clean_and_parse_json(response.choices[0].message.content)
         except Exception as e:
             print(f"❌ NVIDIA Error: {e}")
 
@@ -142,111 +190,147 @@ def generate_custom_deck_cards(
     subject: str,
     deck_name: str,
     total_questions: int,
-    sample_format_text: str = None
+    sample_format_text: str = None,
+    language: str = "Taglish"
 ) -> list:
     """
-    Dual-API flashcard generation:
-    API 1 (Groq Llama 3.3) generates MCQ questions based on context and optional sample questions format.
+    Dual-API flashcard generation with batching (prevents token truncation) and language preferences.
+    API 1 (Groq Llama 3.3) generates MCQ questions based on context.
     API 2 (NVIDIA Qwen 122B) acts as evaluator to double-check accuracy and enforce proper JSON format.
     """
     import math
     import json
     
+    # We generate in small batches of 3 questions at a time to prevent JSON truncation
+    batch_size = 3
+    all_final_cards = []
+    
     # Split text into manageable chunks
-    chunk_size = 10000
+    chunk_size = 12000
     chunks = [context_text[i:i+chunk_size] for i in range(0, len(context_text), chunk_size)]
     if not chunks:
         return []
         
-    questions_per_chunk = math.ceil(total_questions / len(chunks))
-    all_final_cards = []
+    total_chunks = len(chunks)
+    questions_per_chunk = math.ceil(total_questions / total_chunks)
+    
+    # Setup language prompt instructions
+    lang_instruction = ""
+    if language == "English":
+        lang_instruction = "You MUST write all questions, options, and explanations in pure, clear English."
+    elif language == "Tagalog":
+        lang_instruction = "You MUST write all questions, options, and explanations in pure Tagalog (Filipino)."
+    else: # Taglish
+        lang_instruction = "You MUST write all questions, options, and explanations in conversational Taglish (a natural mix of Tagalog and English, using English for technical terms and Tagalog for explanations/analogies)."
     
     for idx, chunk in enumerate(chunks, start=1):
-        print(f"Generating questions for chunk {idx}/{len(chunks)}...")
-        
-        # API 1: Generate initial questions with Groq Llama
-        llama_questions = []
-        if client_groq:
-            prompt_api1 = f"""
-            You are "Tropa", an elite CS study buddy. Generate exactly {questions_per_chunk} tricky multiple-choice questions from the following module text:
+        questions_needed = min(questions_per_chunk, total_questions - len(all_final_cards))
+        if questions_needed <= 0:
+            break
             
-            Subject: {subject}
-            Reviewer Deck: {deck_name}
-            Module Content:
-            {chunk}
+        # Loop to generate in batches of 3
+        while questions_needed > 0:
+            batch_count = min(batch_size, questions_needed)
+            print(f"Generating batch of {batch_count} questions for chunk {idx}/{len(chunks)}...")
             
-            CRITICAL REQUIREMENTS:
-            1. Make the questions highly situational, practical, and scenario-based.
-            2. Output a strictly formatted JSON object with a single key 'questions' containing an array of objects.
-            3. Each object must have:
-               "question": "The scenario/question",
-               "options": ["Choice A", "Choice B", "Choice C", "Choice D"],
-               "correct_answer": "The correct option text exactly matching one of the options"
-            """
-            
-            if sample_format_text:
-                prompt_api1 += f"\n4. You MUST mimic the formatting style, layout, and complexity of these sample questions:\n{sample_format_text[:1500]}\n"
+            # API 1: Generate initial questions with Groq Llama
+            llama_questions = []
+            if client_groq:
+                prompt_api1 = f"""
+                You are "Tropa", an elite CS study buddy. 
+                Generate exactly {batch_count} tricky multiple-choice questions from the following module text.
                 
-            try:
-                response = client_groq.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
-                    messages=[
-                        {"role": "system", "content": "You are a bilingual CS professor. Explain in English/Taglish. Output MUST be valid JSON."},
-                        {"role": "user", "content": prompt_api1}
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.7
-                )
-                data = json.loads(response.choices[0].message.content)
-                llama_questions = data.get("questions", [])
-            except Exception as e:
-                print(f"❌ Groq API1 generation failed: {e}")
+                Subject: {subject}
+                Reviewer Deck: {deck_name}
+                {lang_instruction}
                 
-        # API 2: Verify, validate, and format check using NVIDIA Qwen
-        if client_qwen and llama_questions:
-            prompt_api2 = f"""
-            You are an expert academic tutor. Review the following generated multiple-choice questions and check them against the source context for factual accuracy and format compatibility.
-            
-            Source Context:
-            {chunk}
-            
-            Raw Questions Generated by API1:
-            {json.dumps(llama_questions, indent=2)}
-            
-            TASK:
-            Verify and correct the questions. Ensure they have exactly 4 choices in 'options', and 'correct_answer' matches one of the options.
-            Output MUST be valid JSON with a single key 'questions'.
-            """
-            
-            if sample_format_text:
-                prompt_api2 += f"\nDouble-check that they replicate the format: {sample_format_text[:1000]}"
+                Module Content:
+                {chunk}
                 
-            try:
-                response = client_qwen.chat.completions.create(
-                    model=NVIDIA_MODEL,
-                    messages=[
-                        {"role": "system", "content": "You are an academic evaluator. Verify and enforce correct JSON structure. Output MUST be valid JSON."},
-                        {"role": "user", "content": prompt_api2}
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.2,
-                    max_tokens=3072
-                )
-                data = json.loads(response.choices[0].message.content)
-                verified_questions = data.get("questions", [])
+                CRITICAL REQUIREMENTS:
+                1. Make the questions highly situational, practical, and scenario-based.
+                2. Output a strictly formatted JSON object with a single key 'questions' containing an array of objects.
+                3. Each object must have:
+                   "question": "The scenario/question",
+                   "options": ["Choice A", "Choice B", "Choice C", "Choice D"],
+                   "correct_answer": "The correct option text exactly matching one of the options"
+                """
                 
-                # Basic validation
-                for card in verified_questions:
-                    if all(k in card for k in ("question", "options", "correct_answer")) and len(card["options"]) == 4:
-                        if card["correct_answer"] in card["options"]:
+                if sample_format_text:
+                    prompt_api1 += f"\n4. You MUST mimic the formatting style, layout, and complexity of these sample questions:\n{sample_format_text[:1500]}\n"
+                    
+                try:
+                    response = client_groq.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[
+                            {"role": "system", "content": "You are a bilingual CS professor. Explain in the requested language. Output MUST be valid JSON."},
+                            {"role": "user", "content": prompt_api1}
+                        ],
+                        response_format={"type": "json_object"},
+                        temperature=0.7
+                    )
+                    data = clean_and_parse_json(response.choices[0].message.content)
+                    llama_questions = data.get("questions", [])
+                except Exception as e:
+                    print(f"❌ Groq API1 generation failed: {e}")
+                    
+            # API 2: Verify, validate, and format check using NVIDIA Qwen
+            if client_qwen and llama_questions:
+                # Limit source context to 3000 chars to avoid token inflation & truncation
+                short_context = chunk[:3000]
+                prompt_api2 = f"""
+                You are an expert academic tutor. Review the following generated multiple-choice questions.
+                
+                TASK:
+                Verify and correct the questions for accuracy and formatting. Ensure they have exactly 4 choices in 'options', and 'correct_answer' matches one of the options exactly.
+                {lang_instruction}
+                
+                CRITICAL REQUIREMENTS:
+                1. The output MUST be a valid JSON object with a single key 'questions' containing an array of objects.
+                2. Each question object MUST ONLY contain these three keys: "question", "options", "correct_answer".
+                3. Do NOT add any extra fields, such as "explanation" or "concept".
+                4. Do NOT output any conversational text or markdown code blocks. Start your response directly with '{{'.
+                
+                Source Context Reference:
+                {short_context}
+                
+                Raw Questions to Review:
+                {json.dumps(llama_questions, indent=2)}
+                """
+                
+                try:
+                    response = client_qwen.chat.completions.create(
+                        model=NVIDIA_MODEL,
+                        messages=[
+                            {"role": "system", "content": "You are a strict JSON formatting and verification engine. You must output a single valid JSON object containing only the verified questions. Do NOT include any explanations, reasoning, or conversational text. Start your response with '{' and end with '}'."},
+                            {"role": "user", "content": prompt_api2}
+                        ],
+                        response_format={"type": "json_object"},
+                        temperature=0.1,
+                        max_tokens=2048
+                    )
+                    data = clean_and_parse_json(response.choices[0].message.content)
+                    verified_questions = data.get("questions", [])
+                    
+                    # Basic validation
+                    for card in verified_questions:
+                        if all(k in card for k in ("question", "options", "correct_answer")) and len(card["options"]) == 4:
+                            if card["correct_answer"] in card["options"]:
+                                all_final_cards.append(card)
+                except Exception as e:
+                    print(f"❌ Qwen API2 evaluation failed: {e}")
+                    # Fallback to API1 questions if validation fails
+                    for card in llama_questions:
+                        if all(k in card for k in ("question", "options", "correct_answer")) and len(card["options"]) == 4:
                             all_final_cards.append(card)
-            except Exception as e:
-                print(f"❌ Qwen API2 evaluation failed: {e}")
-                # Fallback to API1 questions if validation fails
+            else:
+                # If Qwen client is missing, fallback to API1
                 for card in llama_questions:
                     if all(k in card for k in ("question", "options", "correct_answer")) and len(card["options"]) == 4:
                         all_final_cards.append(card)
                         
+            questions_needed -= batch_count
+            
     # Trim to exactly requested count
     return all_final_cards[:total_questions]
 
