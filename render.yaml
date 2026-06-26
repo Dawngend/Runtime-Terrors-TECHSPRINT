@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sophy-learning-companion
+    env: docker
+    plan: free
+    # Bind the port to 8501 or use Render's default port matching the Dockerfile EXPOSE
+    dockerPublishPorts:
+      - port: 8501
+        protocol: TCP
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+        placeholder: "Your Supabase URL"
+      - key: SUPABASE_KEY
+        sync: false
+        placeholder: "Your Supabase key"
+      - key: GROQ_API_KEY
+        sync: false
+        placeholder: "Your Groq API key"
+      - key: NVIDIA_API_KEY
+        sync: false
+        placeholder: "Your NVIDIA API key"
+      - key: CHROMA_DB_PATH
+        value: "./chroma_db"
+      - key: EXTRACTION_CACHE
+        value: "./extraction_cache"
+      - key: DEFAULT_GRADE_LEVEL
+        value: "10"
+      - key: MAX_FILE_SIZE_MB
+        value: "10"
