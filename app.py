@@ -43,15 +43,13 @@ html, body, [class*="css"]{
 BACKGROUND
 ========================================== */
 
-.stApp{
-
-background:
-radial-gradient(circle at top right,#273B72 0%,transparent 35%),
-radial-gradient(circle at bottom left,#1D2947 0%,transparent 30%),
-linear-gradient(180deg,#09111F,#111C2E);
-
-color:#F8FAFC !important;
-
+html, body, .stApp {
+    background-color: #09111F !important;
+    background:
+        radial-gradient(circle at top right,#273B72 0%,transparent 35%),
+        radial-gradient(circle at bottom left,#1D2947 0%,transparent 30%),
+        linear-gradient(180deg,#09111F,#111C2E) !important;
+    color: #F8FAFC !important;
 }
 
 /* ==========================================
