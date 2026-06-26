@@ -7,6 +7,7 @@ This project was developed with assistance from AI tools to support programming,
 * NVIDIA Qwen 3.5
 * ChatGPT
 * Gemini Pro
+* Anti-Gravity
 
 ## AI Systems Integrated into the Application
 
