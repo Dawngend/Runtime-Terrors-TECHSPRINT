@@ -1,22 +1,51 @@
-from dotenv import load_dotenv
 import os
+import sys
 
-load_dotenv(override=True)
+print("🔍 --- DIAGNOSTIC START ---")
 
-def check_var(name):
-    value = os.getenv(name)
-    print(f"{name}: {'✅ Set' if value else '❌ Missing'}")
-    if value and len(value) > 10:
-        print(f"  Sample: {value[:5]}...{value[-5:]}")
-    return bool(value)
+# 1. Check if .env file exists in current directory
+env_path = os.path.join(os.getcwd(), '.env')
+print(f"1. File Check: .env exists at {env_path}? -> {os.path.exists(env_path)}")
 
-print("🔍 Verifying .env file...\n")
-all_set = True
+if not os.path.exists(env_path):
+    print("❌ ERROR: .env file not found in current folder!")
+    print("💡 Fix: Create the .env file in the same folder where you run this script.")
+    sys.exit()
 
-all_set &= check_var("SUPABASE_URL")
-all_set &= check_var("SUPABASE_KEY")
-all_set &= check_var("GROQ_API_KEY")
-all_set &= check_var("NVIDIA_API_KEY")
-all_set &= check_var("CHROMA_DB_PATH")
+# 2. Check if python-dotenv is installed
+try:
+    from dotenv import load_dotenv
+    print("2. Library Check: python-dotenv installed? -> ✅ Yes")
+except ImportError:
+    print("2. Library Check: python-dotenv installed? -> ❌ No")
+    print("💡 Fix: Run 'pip install python-dotenv'")
+    sys.exit()
 
-print(f"\n📋 Status: {'✅ All keys configured' if all_set else '❌ Some keys missing'}")
+# 3. Load the variables
+print("3. Loading variables...")
+load_dotenv()
+
+# 4. Verify specific keys
+keys_to_check = [
+    "SUPABASE_URL",
+    "SUPABASE_KEY",
+    "GROQ_API_KEY",
+    "NVIDIA_API_KEY"
+]
+
+all_good = True
+for key in keys_to_check:
+    val = os.getenv(key)
+    if val:
+        # Mask the key for security, show first 5 and last 5 chars
+        masked = f"{val[:5]}...{val[-5:]}" if len(val) > 10 else val
+        print(f"   ✅ {key}: Found ({masked})")
+    else:
+        print(f"   ❌ {key}: MISSING or Empty")
+        all_good = False
+
+print("🔍 --- DIAGNOSTIC END ---")
+if all_good:
+    print("🎉 SUCCESS: All keys loaded correctly!")
+else:
+    print("⚠️ WARNING: Some keys are missing. Check your .env file spelling.")
