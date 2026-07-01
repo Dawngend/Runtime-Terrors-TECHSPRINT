@@ -1,0 +1,217 @@
+Computing with Python
+CS0079
+Module 4 Submodule 1
+
+
+[Scanned from Image]:
+Computing with Python
+
+CS0079
+Module 4 Submodule 1
+
+
+
+Subtopic 1
+User-defined Functions
+After this submodule, the learner should be able to:
+▪ Create, test, and run user-defined functions using def.
+▪ Understand and apply the function components.
+▪ Construct functions that use default value.
+▪ Write functions that either uses default or return a value.
+▪ Understand programs that apply local variables.
+
+Functions
+- a sequence of instructions that performs a task.
+Recall: input(), type(), print() are built-in functions.
+Python allows us to also define our own functions.
+
+Functions: Define Your Own Function
+def()
+- used to make new function will be defined.
+Components:
+• Function Header
+• Function Body
+• Descriptive String
+
+Functions: Define Your Own Function
+Components:
+• Function Header
+• starts with a keyword def
+• followed by a function name
+• followed by a pair of parentheses with the input parameter inside
+and ends with a colon ( : )
+Parameters are variables that the user need to supply to a function as input
+and can be manipulated in the body of the function.
+
+Functions: Define Your Own Function
+Components:
+• Function Body
+• where the step-by-step instructions to be executed upon calling the
+function was placed.
+• it is important to note that the instructions in the body of function
+must be indented, and in the case of multiple instructions, all the
+instructions must be of the same indent.
+• at the end of function body, it can return some output. As can be
+seen on the example, it indicates that part is optional, some functions
+can return some output or not.
+
+Functions: Define Your Own Function
+Components:
+• Descriptive String
+• After defining the function header, an optional descriptive string can
+be placed in the middle of triple single or triple double quotes.
+• This can be used to describe in more detail the task that will be
+performed by the function.
+• The descriptive string is also accessed by the command help().
+
+Functions: Define Your Own Function
+Example:
+An example of a function that asks for a name and prints hello + the input
+name. The function must be called first, for the instructions to be executed.
+Different strings was used as input to hello_name().
+If the user inputs a number instead of a string, Python will still execute the function until something
+goes wrong.
+
+Functions: Functions with default value
+
+
+[Scanned from Image]:
+Functions: Functions with default value
+
+hello()
+In [7]: def hello(name="stranger",hour=-1):
+
+Hello stranger!
+Good day!
+
+asks for name (of type string)
+and hour of the day (of type int)
+then use the inputs for greeting
+rae Hello Jasmine!
+Good day!
+
+hello(“Jasmine” )
+
+print("Hello " + name + “!")
+
+hello(name="Ivy", hour=14@@)
+if hour == -1:
+print("Good day!")
+else:
+if hour <= 1200:
+print("Good morning!")
+elif hour <= 1900: Hello Jaclyn!
+print("Good afternoon! ") Good morning!
+else:
+print("Good evening!") In [12]: hello(hour=20@@)
+
+Hello Ivy!
+Good afternoon!
+
+In [11]: hello(hour=1000, name="Jaclyn”)
+
+Hello stranger!
+Good evening!
+
+FEU ALABANG — FEU DILIMAN FEU TECH
+
+
+Functions: Functions with default value
+
+
+[Scanned from Image]:
+Functions: Functions with default value
+
+In [4]: def another_hello(name="stranger” ):
+
+asks for a string name’ then
+prints hello + name
+
+if a name is not supplied by user, default name to print is “stranger”
+
+print("Hello " + name + "!")
+
+another_hello(“Justine”)
+
+Hello Justine!
+
+another_hello()
+
+Hello stranger!
+
+FEU ALABANG FEU DILI
+
+IMAN FEU TECH
+
+
+Functions: Functions with return value
+The function simply computes
+for the area of a rectangle given
+its length and width.
+At the end of the function, the
+keyword return was used to
+indicate the variable that will be
+output by the function.
+Notice that the output of the
+function was assigned to a
+variable.
+
+Functions: Functions with return value
+Also notice that different data types of input was
+performed on the first and second call of
+area_of_rectangle().
+As such, checking the type of area_1, the value is
+different from the type of area_2.
+This only goes to show that Python gives the user
+freedom to assign variables to different data
+types.
+
+Functions: Local Variables
+Question: Can we access the variables that was defined inside functions?
+Take area_of_rectangle() for example, can we use the variable area even
+when we already exit the function?
+Answer: No.
+When defining a function, Python creates a separate listing of variables for it.
+This list of variables can only be accessed during the execution of the
+function.
+
+Functions: Local Variables
+However, the variables that are local to the function is not part of the
+variables tracked across the whole Python notebook.
+
+Exercise:
+Write a program that calculates and prints the number of minutes in a year.
+Write a program that takes the radius of a sphere (a floating-point number)
+as input and outputs the sphere’s circumference.
+
+Q&A SESSION
+
+
+[Scanned from Image]:
+fi
+©
+tH
+
+Q&A SESSION
+
+
+
+
+[Scanned from Image]:
+FEU ALABANG ~— FEU DILIMAN FEU TECH
+
+
+References
+1. SPARTA (2023). SP202: Computing in Python. Linang: Development Academy of the Philippines.
+https://linang.dap.edu.ph.
+2. Scratch, M. (2020). Python Algorithms: A complete guide to learn python for data analysis, machine
+learning, and coding from scratch.
+3. Matthes, E. (2019). Python crash course: A hands-on, project-based introduction to programming. San
+Francisco, CA. No Starch Press.
+4. Pomperada, J. & Moises, R. (2019). Fundamentals of python programming. Manila. MindShaper Co. Inc.
+5. Ahmad, I. (2020). 40 Algorithms Every Programmer Should Know: Hone Your Problem-Solving Skills By
+Learning Different Algorithms And Their Implementation In Python. Packt Publishing.
+6. Codings, Z. (2019). Computer Programming And Cyber Security For Beginners: This Book Includes:
+Python Machine Learning, Sql, Linux, Hacking With Kali Linux, Ethical Hacking. Coding And Cybersecurity
+Fundamentals.
+

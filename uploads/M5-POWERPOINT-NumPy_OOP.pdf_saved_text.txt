@@ -1,0 +1,1180 @@
+
+[Scanned from Image]:
+Computing with Python
+
+CS0079
+Module 5 Submodule 1
+
+FEU ALABANG FEUOIUMAN FEU TECH
+
+
+
+[Scanned from Image]:
+After this submodule, the learner should be able to:
+= Understand the usage of arrays using NumPy.
+= Apply NumPy array to generate and manipulate data.
+
+FEUALABANG FEU DILIMAN FEU TECH
+
+
+
+[Scanned from Image]:
+Numpy
+
+NumPy, short for Numerical Python, is a foundational package for numerical
+computing in Python.
+
+Why NumPy?
+
+o Efficient calculations for large arrays of numbers.
+o Computations on entire arrays without for loops.
+oO array-oriented computing
+
+To utilize the package, the initial step involves employing an import
+command: import numpy as np
+
+BUALABANG FEUDIUMAN FEU TECH
+
+
+
+[Scanned from Image]:
+FEU ALABAL
+
+Numpy
+
+To highlight one advantage of NumPy over traditional Python structures like
+lists, consider the scenario of performing element-wise multiplication of two
+arrays of numbers. While this operation can be accomplished using lists,
+NumPy offers a more efficient solution. Let's explore this through an
+
+example.
+
+x = [2,3,4]
+y = [3,6,8]
+
+[x[1]*y[1] for i in range (3)]
+
+[18, 18, 18]
+
+Multiplication of two arrays of numbers
+
+If we use the short code x*y where
+we simply multiply the two variables,
+x and y, this will lead to ERROR.
+
+NG FEUOIUMAN FEU TECH
+
+np.array([2,4,6])
+
+y = np.array([3,6,9])
+x*y
+
+print (x)
+
+[2 4 6]
+
+In NumPy, this short
+code is all we need to
+indicate element-wise
+multiplication.
+
+
+
+[Scanned from Image]:
+Array
+
+One-dimensional
+
+values
+. array
+ndarray - a generic ——~ ”
+multidimensional
+container 13
+for homogeneous data
+67
+
+Array index starts at 0 and
+increments by 1 in each wf
+succeeding position 4 29
+
+5 33
+
+6 55
+
+LABANG FEUOIUMAN FEU TECH
+
+
+
+[Scanned from Image]:
+Array
+
+two-
+dimensional
+array
+
+columns
+
+
+
+
+[Scanned from Image]:
+Create a simple array using Numpy
+
+To create a NumPy array, you can use the function np.array().
+
+Import and declare numpy as np Create two-dimensional array using
+variable numpy and display the value of an array
+Create one-dimensional array using X= Npeareey CE 274211234261) )
+
+numpy and display the value of an array print (x)
+
+xX = np.array([2,4,6])
+
+int (x)
+oe Output:
+[2 4 6]
+
+; [[2 4 6]
+
+ANG FEUOIUMAN FEU TECH
+
+
+
+
+[Scanned from Image]:
+Create a simple array using Numpy
+
+To create a NumPy array, you can use the function np.array().
+
+elt takes a sequence as input and produces a NumPy array containing
+the passed data.
+
+data = np.array([[1,2,3],[4,5,6]])
+data
+
+
+
+
+[Scanned from Image]:
+Array attributes
+
+Every array has
+
+oshape - tuple indicating size of each
+dimension
+
+odtype - data type of the array
+
+ondim - number of dimensions
+
+data.shape
+
+(2, 3)
+
+dtype
+int64
+
+ndim
+
+(27>)
+2 rows
+
+3
+
+Z
+
+columns
+
+[echnology Pp thLVyere by /nnevation
+
+
+
+[Scanned from Image]:
+More ways to create arrays
+
+e® np.zeros() np.zeros(5)
+® np.ones() array([@., @., @., @.
+® np.arange()
+np.ones((2,4))
+np.arange(7) ({{1., 1., 1
+array -» 1., 1.,
+
+array([@®, 1, 2, 3, 4, 5, 6])
+
+np. arange(1,20,2)
+
+array([ 1, 3, 5, 7, 9, 11, 13, 15, 17, 19])
+
+FEVALABANG FEUOIIMAN FEU TECH Ze y ;
+
+
+
+[Scanned from Image]:
+Array indexing and slicing
+
+e Indexing in one-dimensional array is similar to lists or tuples.
+
+data = np.array([1,2,3,4,5,6,7,8])
+data
+
+array([1, 2, 3, 4, 5, 6, 7, 8])
+
+data[-1]
+
+
+
+
+[Scanned from Image]:
+Array indexing and slicing
+
+e Indexing in one-dimensional array is similar to lists or tuples.
+e However, in arrays, we can use a list of indices inside square brackets.
+
+data
+
+array([1, 2, 3, 4, 5, 6, 7, #2])
+
+data[[1,3,5.7]]
+
+array([?, 4, 6, 8])
+
+ANG FEUOIUMAN FEU TECH
+
+
+
+[Scanned from Image]:
+Array indexing and slicing
+
+e Indexing in 2D arrays with 2 rows and 3 columns
+
+column
+index
+
+fechrrsptoegy | /iiwer by /rnevatligir
+FEU ALABANG Fey OFLIMAN FEU TECH & f i
+
+
+
+[Scanned from Image]:
+Array indexing and slicing
+
+e Going back to our example 2D array
+
+data = np.array([[1,2,3],[4,5,6]])}
+data
+
+array(([1, 2, 3],
+[4, 5, 6]])
+
+data[@,: |
+
+array([1, 2, 3])
+
+data[:,-1]
+
+array([3, 6])
+
+data[:,[@,2]]
+
+array([[1, 3],
+[4, 6]])
+
+
+
+[Scanned from Image]:
+Array Assignments
+
+¢ Going back to our example 2D
+array
+
+¢ A familiar technique is to identify
+the index in the left-hand side and
+
+type in value to assign in the right.
+
+¢ We also change multiple values of
+an array to a single value.
+
+©
+€
+>
+5
+
+FEUOIUMAN = FEU TECH
+
+data = np.array([[1,2,3],[4,5,6]])
+data
+
+array([[1, 2, 3];
+[4, 5, 6]])
+
+data[@,1]
+data
+
+array([[1, 7, 3],
+[4, 5, 6]])
+
+data[1,:] = 8
+data
+
+array([[1, 7, 3],
+[8, 8, 8]])
+
+
+
+
+[Scanned from Image]:
+Array Assignments
+
+¢ Here are sample codes that change
+multiple values in the array with multiple
+numbers
+
+data[1,:]
+
+data
+
+array([[1, 7, 3];
+[8, 8, 8]])
+
+data[@,:2] = [9,16]
+data
+
+array({[[ 9, 16, 3],
+[ 8, 8, 8]])
+
+data[1,[@,2]]=[9,10]
+data
+
+array([[ 9, 18, 3],
+[ 9, 8, 16]])
+
+by hiwaclion:
+
+
+
+[Scanned from Image]:
+Mathematical Operations and
+
+Comparisons
+
+¢ On adding, subtracting, multiplying,
+and dividing a constant.
+
+array([8.25, 3.26, 5.64])
+
+datal - 108
+
+array([-1.75, -6.74, -4.36])
+
+datal * 2
+
+array([16.5 , 6.52, 11.28])
+
+datal / 2
+
+array([4.125, 1.63 , 2.82 ])
+
+
+
+[Scanned from Image]:
+Mathematical Operations and
+Comparisons
+
+Element-wise math operations over arrays of the same shape.
+
+data
+
+array([[1, 2, 3], ids = ei
+[4, 5, 6]]) ; a
+
+data2 = np.array([[7,8,9],[10,11,7]])
+
+data + datal
+data?
+
+array([[ 7, 8 9]- array([[ 9.25, 5.26, 8.64],
+[18@, 11, 7]]) [12.25, 8.26, 11.64]])
+
+
+
+
+[Scanned from Image]:
+Mathematical Operations and
+Comparisons
+
+¢ Comparing values in an array dapaa 2 aplapray({ [7.209], 18 44071)
+data?
+
+with a constant
+array([[ 7, 8, 9],
+[18, 11, 7]])
+
+data? > 8
+
+array([[False, False, True],
+[ True, True, False]])
+
+leEltHht_Otl eg ty /)/: LA/EFL ey [MeeVva Liew
+
+
+
+[Scanned from Image]:
+Mathematical Operations and
+Comparisons
+
+data
+
+¢ Element-wise comparison over arrays of the
+Same shape array([[1, 2,
+
+[4, 5, 6
+data > data? aoe
+
+array([[False, False, False], array([[ 7, 8, 9%],
+[False, False, False]]) [19, 11, 7]])
+
+
+
+
+[Scanned from Image]:
+More Operations and Features
+
+data2
+
+*« NumPy has many functions jai 2,
+that can take arrays as input ein Ot
+argument. The output is the
+function evaluated for every
+
+element of the input array. array([[2-64575131, 2.82842712, 3. |:
+[3.16227766, 3.31662479, 2.64575131]])
+
+np.sqrt(data2)
+
+np.round(np.sart(data2),2)
+
+array({[[2.65, 2.83, 3. |],
+[3.16, 3.32, 2.65]])
+
+FEVALAEANG FEUODIUMAN FEU TECH
+
+
+
+[Scanned from Image]:
+More Operations and Features
+
+¢ NumPy has many functions data2
+that can take arrays as input areavlit He Be EL
+argument. The output is the [1e, 11, 7]])
+function evaluated for every
+element of the input array.
+
+np.sqrt(data?2)
+
+array([[2.64575131, 2.32842712, 3. :
+[3.16227766, 3.31662479, 2.64575131]])
+
+
+
+
+[Scanned from Image]:
+More Operations and Features
+
+e NumPy has many functions
+that can take arrays as input
+argument. The output is the
+function evaluated for every
+element of the input array.
+
+data
+
+array([[1, 2, 3],
+[4, 5, 6]])
+
+data?
+
+array(([[ 7. 8, 9],
+[1@, 11, 7]])
+
+np.maximum(data, data2)
+
+array([[ 7, 8, 9%],
+[18, 11, 7]])
+
+
+
+[Scanned from Image]:
+More Operations and Features
+
+Another attribute of an array is called T attribute. T stands for transpose.
+
+data2
+
+
+
+[Scanned from Image]:
+More Operations and Features
+
+data?
+e Array methods that compute some
+descriptive statistics array([[ 7, 8, 9],
+
+[18, 11, 7]])
+
+o min()
+
+5 max() data?.min()
+o mean() :
+
+o sum()
+
+data2.sum( )
+
+52
+Note: Just like lists, arrays are mutable. So,
+
+calling for example, the method sort() on an data2.mean()
+array object will change the ordering of values
+in the original array.
+
+NG FEUOIUMAN FEU TECH
+
+2.6666666660656666
+
+FEU ALABAD
+
+
+
+[Scanned from Image]:
+More Operations and Features
+
+« Array methods that compute some data;
+descriptive statistics array([ 2, 6, 4, 5, 10])
+o min()
+O max() np.sort(data3)
+© mean() array([ 2, 4, 5, 6, 10])
+o sum()
+
+data = np.array([6,4,3,4,6,5])
+data
+
+array([6, 4, 3, 4, 6, 5])}
+
+data.sort( )
+data
+
+array([3, 4, 4, 5, 6, 6))
+
+
+
+[Scanned from Image]:
+More Operations and Features
+
+data4 = np.array([1,4,2,7,6])
+data4
+
+¢ Python can index elements armen Pigclhe, Be Fei
+of an array that satisfy a
+logical expression.
+
+datad[datad > 3]
+
+array([4, 7, 6])
+
+data3
+
+array([ 2, 4, 5, 6, 1@])
+
+data4[data3 >» 3] = @
+data4
+
+array([1, @, 9, @, @])
+
+Fev MG FEU OLLUIMAN FEU TECH
+
+
+
+[Scanned from Image]:
+Summary
+
+We had an introduction to NumPy. In particular, we learned
+about arrays, specifically
+
+¢ how to create and initialize arrays
+
+¢ how to perform indexing and slicing in arrays
+
+* mathematical operations and comparisons on arrays
+
+* more operations and features involving arrays e.g., Boolean
+indexing.
+
+
+
+[Scanned from Image]:
+Subtopic 2
+Object Oriented Programming
+(OOP)
+
+After this submodule, the learner should be able to:
+= Define what objects, classes, and inheritance are in Python.
+= Create classes and objects in Python.
+
+
+
+[Scanned from Image]:
+Object-Oriented Programming (OOP)
+
+@ Code is structured so that programming tasks are organized into so-called
+objects.
+
+@ WhyOOP?
+o Allows us to create our own datatypes
+
+@ Whycreate ourown datatypes?
+o Better representation of real-world entity. We want our solutions to be
+designed around such type.
+
+
+
+[Scanned from Image]:
+Object-Oriented Programming (OOP)
+
+e Objecthavetwo main features:
+o Attributes (data/property)
+o Methods (functions/behaviors)
+
+e Class
+o Blueprint to create objects
+
+
+
+[Scanned from Image]:
+OOP: Example
+
+e ClassExample e@ ObjectExample
+
+@ Attributes
+
+Attributes
+Et oeAS name Juan Dela Cruz
+age age 40
+Methods Methods
+introduce () introduce ()
+Person personl
+
+VOIUMAN FEU TECH
+
+FEU ALAEANG FE
+
+
+
+[Scanned from Image]:
+OOP: Example
+
+e Class Example
+
+oe Attributes
+
+name
+age
+Methods
+
+introduce ()
+
+Person
+
+NM FEU TECH
+
+FEV ALABANG FEU OIUMA!
+
+@ Object Example
+
+personl
+
+Attributes
+name Juan Dela Cruz
+age 40
+
+Methods
+
+introduce ()
+
+person2
+
+Object Example
+
+Attributes
+name Crisostomo Ibarra
+age 30
+
+Methods
+
+introduce ()
+
+
+
+[Scanned from Image]:
+e o class Person:
+(2) Xamp © def init (self, name, age):
+
+selt .name name
+selflage = age
+
+def introduce(self):
+
+#
+
+@ Class Example print("Greetings, I'm" + self.name})
+
+@ | [129] personl = Person("Juan dela Cruz", 40)
+Attributes personl. introduce(}
+
+print (person. name}
+
+sae print (person. age}
+age
+Methods Greetings, I'mJuan dela Cruz
+Juan dela Cruz
+introduce () 4a
+
+person? = Person("Jhian Dale Sabonsolin”, 30)
+person2.introduce( }
+
+Person
+
+print (person2. name}
+print (person2. age)
+
+Greetings, I'mJhian Dale Sebonsolin
+Jhian Dale Sabonsolin
+30
+
+FEU ALABANG FEUOIUIMAN FEU TECH
+
+
+
+[Scanned from Image]:
+FEV ALABANG
+
+Fe
+
+OOP: Example
+
+Class Example
+
+Person
+
+U OFLIMAN
+
+Feu TECH
+
+o class Person:
+def init (self, name, age):
+self.name = name
+self.age = age
+
+def introduce(self):
+
+print("Greetings, I'm" + self.name)
+
+Attributes
+name
+[19] personl = Person(“Juan dela Cruz”, 49)
+age person. introduce)
+rint(personl1. name
+Methods P (P )
+
+print (person. age)
+
+introduce ()
+
+Greetings, I'mJuan dela Cruz
+Juan dela Cruz
+Attributes
+
+eS person? = Person("Jhian Dale Sabonsolin", 30)
+
+age 40 person2. introducel }
+Methods iia area a
+print (person2.age)
+
+introduce ()
+
+Greetings, I'mJhian Dale Sabonsolin
+Thian Dale Sabonsolin
+38
+
+personl
+
+
+
+[Scanned from Image]:
+Defining A Class
+
+class ClassName:
+def init (self, parameterl, parameter2, ...):
+#define or assign object attributes
+
+def other methods(self, parameterl, parameter2, ...):
+# body of the method
+
+ALABANG FEU Of Feu TEC ob g
+
+
+
+[Scanned from Image]:
+Defining A Class
+
+ClassName:
+
+def parameterl, parameter2, ...):
+#define or assign object attributes
+
+def other_methods (/self, parameterl, parameter2, ...):
+# body of the method
+
+e __init __()
+-aspecial method automatically runassoonasan objectis
+instantiated
+
+aed = Fey OFLUIMAN A i
+
+Feu TECH
+
+
+
+[Scanned from Image]:
+FEU ALABANG
+
+Defining A Class
+
+class ClassName:
+
+def _init_ (self, parameterl1, parameter2, .....):
+
+# define or assign object attributes
+def other_methods(self, parameter1, parameter2,
+# body of the method
+
+class Person:
+def init _ (self, name, age):
+self.name = name
+self.age = age
+
+def introduce(self):
+print( "Greetings, I'm" + self.name)
+
+FEU OIUMAN Feu TECH
+
+
+
+[Scanned from Image]:
+Creating an object of a Class
+
+class Person:
+def init (self, name,
+self.name = name
+self.age = age
+
+def introduce(self):
+print("Greetings, I'm
+
++ self .name}
+
+[19] person = Person("Juan dela Cruz", 49)
+person. introduce( )
+print(person1. name)
+print(personi.age)
+
+[21] person2 = Person("Jhian Dale Sabonsolin", 30)
+person2?. introduce(}
+print (person2. name)
+print (person2. age}
+
+Greetings, I'mJuan dela Cruz Greetings, I'mJhian Dale Sabonsolin
+Juan dela Cruz Jhian Dale Sabonsolin
+40 38)
+
+FEV ALABANG FEU DILIMAN FEU TECH
+
+
+
+[Scanned from Image]:
+Creating an object of a Class
+
+e Just like in strings and lists, we can — glee sett
+; = init self, name, age):
+also use dot+TAB to determine the ie liane :
+attributes andmethods associated self.age = age
+
+with a certain object.
+
+def introduce(selt):
+print("Greetings, I'm" + self.name)
+
+I=] name
+
+[=] age
+f introduce
+
+
+
+
+[Scanned from Image]:
+Class vs Instance Attributes
+
+e Classattributes are attributes that are accessible across all the created
+instances.
+
+class Personve2:
+
+eee
+
+# this variable nis a class attribute
+n= 8
+
+def init_ (self, name, age):
+
+self.name = name
+
+self.age = age
+
+# every time a mew Person is created, class attribute n by 1
+personv2.n += 1
+
+
+
+
+[Scanned from Image]:
+oC class Personv2:
+n= 6
+
+__init_ (self, name, age):
+self.name = name
+
+self.age = age
+
+Personv2.n += 1
+
+def num_instances(self):
+print("we have", Personv2.n, “number of persons in total")
+
+[25] personl = Personv2("Tandang Sora", 103)
+personl1.num_instances( )
+person? = Personv2("Maria Clara", 20)
+person2.num_instances( )
+person2.num_instances( )
+
+we have 1 number of persons in total
+we have 2 number of persons in total
+we have 2 number of persons in total
+
+FEVALAEANG FEU OILIMAN FEU TECH
+
+
+
+[Scanned from Image]:
+Inheritance
+
+e Creationofaclassthatinheritsall themethodsand attributes of the another class
+
+© Attributes
+
+name
+age
+Methods
+ee a
+
+introduce ()
+
+Person
+
+O Attributes
+
+name
+age
+
+Methods
+tne f)
+
+introduce ()
+
+Politician
+
+
+
+[Scanned from Image]:
+Inheritance: Extending New Method
+
+e ChildClass extends available methods from Parent Class
+
+Attributes © Attributes
+
+name mn name
+age Child Class age
+
+Q Methods L Methods
+ane %) ont 1)
+introduce () introduce ()
+
+show _ occupation ()
+
+Politician
+
+
+
+[Scanned from Image]:
+mm Whe
+
+Tn Wu
+
+Inheritance: Extending New Method
+
+e ChildClass extends available methods from Parent Class
+
+class Personv2:
+
+# this variable n is a class attribute
+n= 0
+
+def _init  (self,name,age):
+
+FEY OIUMAN
+
+self.name = name
+
+self.age = age
+
+# every time a new Person is created, class attribute n inc
+Personv2.n += 1
+
+introduce(self):
+
+print("Greetings, I'm " + self.name)
+print("I'm ", self.age, "years old")
+num_instances(self):
+
+print("We have", Personv2.n, "number of Persons in total.")
+
+Feu TECH
+
+class Politician(Personv2):
+def show_occupation(self):
+print("I'm a politician”)
+
+politicianl = Politician("Isko Moreno", 46)
+politicianl.introduce()
+politicianl.show_occupation( )
+
+Greetings, I'm Isko Moreno
+I'm 46 years old
+I'm a politician
+
+
+
+[Scanned from Image]:
+Inheritance: Method Overriding
+
+e Existing method in Parent class is implemented differently in Child Class
+
+© Attributes
+————
+age
+Methods
+
+re. 0b)
+
+introduce ()
+
+show_occupation ()
+
+Politician
+
+ALAEANG FEU OIUIMAN Feu TECH
+
+© Attributes
+
+age
+
+Methods
+Deen
+introduce ()
+
+show_occupation ()
+
+Senator
+
+: ff P 4 l. > ff PA : =
+Tec LA FLELOAY //: AN EFL ey PLIL OVA Lie: -
+
+Aa
+
+
+
+[Scanned from Image]:
+Inheritance: Method Overriding
+
+e Existing method in Parent class is implemented differently in Child Class
+
+class Senator(Politician):
+def show_occupation(self):
+print("I'm " + self.name)
+print("I'm a Senator")
+
+1 class Politician(Personv2):
+2 def show_occupation(self):
+3
+
+print("I'm a politician" )
+politician2 = Senator("Grace Poe", 53)
+8 politician2.show_occupation()
+
+I'm Grace Poe
+I'm a Senator
+
+
+
+
+[Scanned from Image]:
+Summary
+
+e Thisweek,weareableto
+o Learn about object-oriented programming (OOP)
+o ImplementOOP in Python
+
+o Implement basic concepts in OOP, specifically:
+m class vs objects
+m class vs object attributes
+m inheritance
+
+
+
+[Scanned from Image]:
+References
+
+SPARTA (2023). SP202: Computing in Python. Linang: Development Academy of the Philippines.
+
+https://linang.dap.edu.ph.
+
+2. Scratch, M. (2020). Python Algorithms: A complete guide to learn python for data analysis, machine
+learning, and coding from scratch.
+
+3. Matthes, E. (2019). Python crash course: A hands-on, project-based introduction to programming. San
+Francisco, CA. No Starch Press.
+
+4. Pomperada, J. & Moises, R. (2019). Fundamentals of python programming. Manila. MindShaper Co. Inc.
+
+5. Ahmad, |. (2020). 40 Algorithms Every Programmer Should Know: Hone Your Problem-Solving Skills By
+Learning Different Algorithms And Their Implementation In Python. Packt Publishing.
+
+6. Codings, Z. (2019). Computer Programming And Cyber Security For Beginners: This Book Includes:
+Python Machine Learning, Sql, Linux, Hacking With Kali Linux, Ethical Hacking. Coding And
+Cybersecurity Fundamentals.
+
+7. Coursera (2023). What Is Data Wrangling? Definition, Steps, and Why It Matters.
+
+https://www.coursera.org/articles/data-wrangling
+
+
