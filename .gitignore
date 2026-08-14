@@ -18,3 +18,5 @@ __pycache__/
 # VIRTUAL ENVIRONMENT (Your local python installation)
 venv/
 .venv/
+uploads/
+plan for our app.txt
